@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Costco SameDay Grocery Search</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 600px;
+            transform: translateY(0);
+            transition: transform 0.3s ease;
+        }
+
+        .container:hover {
+            transform: translateY(-5px);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2.2em;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .input-section {
+            margin-bottom: 30px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #555;
+            font-size: 1.1em;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 200px;
+            padding: 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 12px;
+            font-size: 16px;
+            font-family: inherit;
+            resize: vertical;
+            transition: all 0.3s ease;
+            background: #fafbfc;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .button-container {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            min-width: 140px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .clear-btn {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+        }
+
+        .clear-btn:hover {
+            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.4);
+        }
+
+        .store-sections {
+            margin: 30px 0;
+        }
+
+        .store-section {
+            background: rgba(255, 255, 255, 0.5);
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(102, 126, 234, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .store-section:hover {
+            background: rgba(255, 255, 255, 0.7);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .store-section h2 {
+            margin-bottom: 15px;
+            color: #444;
+            font-size: 1.3em;
+            text-align: center;
+        }
+
+        .wholefoods-btn {
+            background: linear-gradient(135deg, #10ac84, #00a085);
+            box-shadow: 0 4px 15px rgba(16, 172, 132, 0.3);
+        }
+
+        .wholefoods-btn:hover {
+            box-shadow: 0 8px 25px rgba(16, 172, 132, 0.4);
+        }
+            background: rgba(102, 126, 234, 0.1);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            border-left: 4px solid #667eea;
+        }
+
+        .instructions p {
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .instructions p:last-child {
+            margin-bottom: 0;
+        }
+
+        .status {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 600;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
+        }
+
+        .status.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .status.success {
+            background: rgba(46, 204, 113, 0.1);
+            color: #27ae60;
+            border: 1px solid rgba(46, 204, 113, 0.3);
+        }
+
+        .status.error {
+            background: rgba(231, 76, 60, 0.1);
+            color: #e74c3c;
+            border: 1px solid rgba(231, 76, 60, 0.3);
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 30px 20px;
+                margin: 10px;
+            }
+
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .button-container {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🛒 Grocery Store Search</h1>
+        
+        <div class="instructions">
+            <p><strong>How to use:</strong> Enter your grocery items one per line in the text area below, then choose which store to search.</p>
+            <p>Example:<br>
+            organic bananas<br>
+            greek yogurt<br>
+            olive oil</p>
+        </div>
+
+        <div class="input-section">
+            <label for="groceryList">Enter grocery items (one per line):</label>
+            <textarea 
+                id="groceryList" 
+                placeholder="organic bananas&#10;greek yogurt&#10;olive oil&#10;whole grain bread&#10;fresh salmon"></textarea>
+        </div>
+
+        <div class="store-sections">
+            <div class="store-section">
+                <h2>🏪 Costco SameDay</h2>
+                <div class="button-container">
+                    <button onclick="searchCostco()">Search Costco</button>
+                </div>
+            </div>
+
+            <div class="store-section">
+                <h2>🥬 Whole Foods (Amazon)</h2>
+                <div class="button-container">
+                    <button onclick="searchWholeFoods()" class="wholefoods-btn">Search Whole Foods</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="button-container">
+            <button class="clear-btn" onclick="clearList()">Clear List</button>
+        </div>
+
+        <div id="status" class="status"></div>
+    </div>
+
+    <script>
+        function searchCostco() {
+            searchStore('costco');
+        }
+
+        function searchWholeFoods() {
+            searchStore('wholefoods');
+        }
+
+        function searchStore(store) {
+            const textarea = document.getElementById('groceryList');
+            const items = textarea.value
+                .split('\n')
+                .map(item => item.trim())
+                .filter(item => item.length > 0);
+
+            if (items.length === 0) {
+                showStatus('Please enter at least one grocery item.', 'error');
+                return;
+            }
+
+            // Show success message
+            const storeName = store === 'costco' ? 'Costco SameDay' : 'Whole Foods';
+            showStatus(`Opening ${items.length} ${storeName} search tab${items.length === 1 ? '' : 's'}...`, 'success');
+
+            // Try opening all tabs immediately (better chance of working)
+            let blockedCount = 0;
+            items.forEach((item, index) => {
+                let searchUrl;
+                if (store === 'costco') {
+                    searchUrl = `https://sameday.costco.com/store/costco/s?k=${encodeURIComponent(item)}`;
+                } else if (store === 'wholefoods') {
+                    searchUrl = `https://www.amazon.com/s?k=${encodeURIComponent(item)}&i=wholefoods&rh=n%3A18473610011`;
+                }
+                
+                try {
+                    const newTab = window.open(searchUrl, '_blank');
+                    if (!newTab || newTab.closed || typeof newTab.closed == 'undefined') {
+                        blockedCount++;
+                        console.log(`Tab blocked for: ${item}`);
+                    }
+                } catch (error) {
+                    blockedCount++;
+                    console.log(`Error opening tab for ${item}:`, error);
+                }
+            });
+
+            if (blockedCount > 0) {
+                showStatus(`${blockedCount} tabs were blocked. Please allow pop-ups and try again.`, 'error');
+            }
+        }
+
+        function clearList() {
+            document.getElementById('groceryList').value = '';
+            showStatus('List cleared!', 'success');
+        }
+
+        function showStatus(message, type) {
+            const statusDiv = document.getElementById('status');
+            statusDiv.textContent = message;
+            statusDiv.className = `status ${type} show`;
+            
+            setTimeout(() => {
+                statusDiv.classList.remove('show');
+            }, 3000);
+        }
+
+        // Allow Enter key to search when textarea is focused
+        document.getElementById('groceryList').addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.key === 'Enter') {
+                searchAllItems();
+            }
+        });
+    </script>
+</body>
+</html>
