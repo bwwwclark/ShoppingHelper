@@ -187,6 +187,27 @@
             background: linear-gradient(135deg, #A52A2A, #8B0000) !important;
         }
 
+        .amazon-btn {
+            background: linear-gradient(135deg, #FF9900, #FF7700) !important;
+            box-shadow: 0 4px 15px rgba(255, 153, 0, 0.3);
+            color: #000000 !important;
+        }
+
+        .amazon-btn:hover {
+            box-shadow: 0 8px 25px rgba(255, 153, 0, 0.4);
+            background: linear-gradient(135deg, #FF7700, #FF9900) !important;
+        }
+
+        .target-btn {
+            background: linear-gradient(135deg, #CC0000, #E50000) !important;
+            box-shadow: 0 4px 15px rgba(204, 0, 0, 0.3);
+        }
+
+        .target-btn:hover {
+            box-shadow: 0 8px 25px rgba(204, 0, 0, 0.4);
+            background: linear-gradient(135deg, #E50000, #CC0000) !important;
+        }
+
         .status {
             margin-top: 20px;
             padding: 15px;
@@ -328,6 +349,20 @@
                     <button onclick="searchWholeFoods()" class="wholefoods-btn">Search Whole Foods</button>
                 </div>
             </div>
+
+            <div class="store-section">
+                <h2>📦 Amazon</h2>
+                <div class="button-container">
+                    <button onclick="searchAmazon()" class="amazon-btn">Search Amazon</button>
+                </div>
+            </div>
+
+            <div class="store-section">
+                <h2>🎯 Target</h2>
+                <div class="button-container">
+                    <button onclick="searchTarget()" class="target-btn">Search Target</button>
+                </div>
+            </div>
         </div>
 
         <div class="button-container">
@@ -418,6 +453,14 @@
             searchStore('wholefoods');
         }
 
+        function searchAmazon() {
+            searchStore('amazon');
+        }
+
+        function searchTarget() {
+            searchStore('target');
+        }
+
         function searchStore(store) {
             const textarea = document.getElementById('groceryList');
             const items = textarea.value
@@ -431,7 +474,13 @@
             }
 
             // Show success message
-            const storeName = store === 'costco' ? 'Costco SameDay' : 'Whole Foods';
+            const storeNames = {
+                'costco': 'Costco SameDay',
+                'wholefoods': 'Whole Foods',
+                'amazon': 'Amazon',
+                'target': 'Target'
+            };
+            const storeName = storeNames[store];
             showStatus(`Opening ${items.length} ${storeName} search tab${items.length === 1 ? '' : 's'}...`, 'success');
 
             // Try opening all tabs immediately (better chance of working)
@@ -442,6 +491,10 @@
                     searchUrl = `https://sameday.costco.com/store/costco/s?k=${encodeURIComponent(item)}`;
                 } else if (store === 'wholefoods') {
                     searchUrl = `https://www.amazon.com/s?k=${encodeURIComponent(item)}&i=wholefoods&rh=n%3A18473610011`;
+                } else if (store === 'amazon') {
+                    searchUrl = `https://www.amazon.com/s?k=${encodeURIComponent(item)}`;
+                } else if (store === 'target') {
+                    searchUrl = `https://www.target.com/s?searchTerm=${encodeURIComponent(item)}`;
                 }
                 
                 try {
