@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Grocery Store Search</title>
+    <title>Shopping List Search</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tesseract.js/5.0.2/tesseract.min.js"></script>
     <style>
         * {
@@ -311,17 +311,18 @@
 </head>
 <body>
     <div class="container">
-        <h1>🛒 Grocery Store Search</h1>
+        <h1>🛒 Shopping List Search</h1>
         
         <div class="instructions">
-            <p><strong>How to use:</strong> Enter your grocery items one per line in the text area below, then choose which store to search.</p>
-            <p>You can also drag and drop an image of your handwritten grocery list for automatic OCR text extraction!</p>
+            <p><strong>How to use:</strong> Enter your shopping items one per line in the text area below, then choose which store to search.</p>
+            <p>You can also drag and drop an image of your handwritten shopping list for automatic OCR text extraction!</p>
             <p><strong>Shopping process:</strong> When you click a search button, a new tab will open up for every item on your list. You just need to add an item to your shopping cart on each tab, then close it. When you get to the last tab, you should have a full shopping cart, and you can check out.</p>
+            <p><strong>Important:</strong> You must allow pop-ups from this site in order to use it properly. <a href="https://support.google.com/chrome/answer/95472" target="_blank" style="color: #8B0000; text-decoration: underline;">Click here for help allowing pop-ups in Chrome</a>.</p>
         </div>
 
         <div class="drop-zone" id="dropZone">
             <p><strong>📷 Drag & Drop Image OCR</strong></p>
-            <p>Drag an image of your grocery list here, or click to upload</p>
+            <p>Drag an image of your shopping list here, or click to upload</p>
             <button class="upload-btn" onclick="document.getElementById('fileInput').click()">Choose Image</button>
             <input type="file" id="fileInput" class="file-input" accept="image/*" onchange="handleFileSelect(this.files[0])">
         </div>
@@ -329,10 +330,10 @@
         <div id="processingStatus"></div>
 
         <div class="input-section">
-            <label for="groceryList">Enter grocery items (one per line):</label>
+            <label for="groceryList">Enter shopping items (one per line):</label>
             <textarea
                 id="groceryList"
-                placeholder="organic bananas&#10;greek yogurt&#10;olive oil&#10;whole grain bread&#10;fresh salmon"></textarea>
+                placeholder="organic bananas&#10;bluetooth headphones&#10;olive oil&#10;phone charger&#10;fresh salmon"></textarea>
         </div>
 
         <div class="store-sections">
@@ -469,7 +470,7 @@
                 .filter(item => item.length > 0);
 
             if (items.length === 0) {
-                showStatus('Please enter at least one grocery item.', 'error');
+                showStatus('Please enter at least one shopping item.', 'error');
                 return;
             }
 
