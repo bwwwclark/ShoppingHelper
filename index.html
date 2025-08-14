@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Costco SameDay Grocery Search</title>
+    <title>Grocery Store Search</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tesseract.js/5.0.2/tesseract.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -12,8 +13,8 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Courier New', Courier, monospace !important;
+            background: linear-gradient(135deg, #2c2c2c 0%, #1a1a1a 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -26,11 +27,12 @@
             backdrop-filter: blur(10px);
             border-radius: 20px;
             padding: 40px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
             width: 100%;
             max-width: 600px;
             transform: translateY(0);
             transition: transform 0.3s ease;
+            border: 3px solid #8B0000;
         }
 
         .container:hover {
@@ -39,14 +41,30 @@
 
         h1 {
             text-align: center;
-            color: #333;
+            color: #000000 !important;
             margin-bottom: 30px;
             font-size: 2.2em;
             font-weight: 700;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            font-family: 'Courier New', Courier, monospace !important;
+        }
+
+        .instructions {
+            background: rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            border-left: 4px solid #8B0000;
+        }
+
+        .instructions p {
+            color: #000000 !important;
+            line-height: 1.6;
+            margin-bottom: 10px;
+            font-family: 'Courier New', Courier, monospace !important;
+        }
+
+        .instructions p:last-child {
+            margin-bottom: 0;
         }
 
         .input-section {
@@ -57,28 +75,57 @@
             display: block;
             margin-bottom: 10px;
             font-weight: 600;
-            color: #555;
+            color: #000000 !important;
             font-size: 1.1em;
+            font-family: 'Courier New', Courier, monospace !important;
         }
 
         textarea {
             width: 100%;
             min-height: 200px;
             padding: 15px;
-            border: 2px solid #e1e5e9;
+            border: 3px solid #000000;
             border-radius: 12px;
             font-size: 16px;
-            font-family: inherit;
+            font-family: 'Courier New', Courier, monospace !important;
             resize: vertical;
             transition: all 0.3s ease;
-            background: #fafbfc;
+            background: #ffffff;
+            color: #000000;
         }
 
         textarea:focus {
             outline: none;
-            border-color: #667eea;
-            background: #fff;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            border-color: #8B0000;
+            background: #ffffff;
+            box-shadow: 0 0 0 3px rgba(139, 0, 0, 0.2);
+        }
+
+        .store-sections {
+            margin: 30px 0;
+        }
+
+        .store-section {
+            background: rgba(0, 0, 0, 0.05);
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            border: 3px solid #000000;
+            transition: all 0.3s ease;
+        }
+
+        .store-section:hover {
+            background: rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .store-section h2 {
+            margin-bottom: 15px;
+            color: #000000 !important;
+            font-size: 1.3em;
+            text-align: center;
+            font-family: 'Courier New', Courier, monospace !important;
         }
 
         .button-container {
@@ -89,22 +136,24 @@
         }
 
         button {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            border: none;
+            background: linear-gradient(135deg, #8B0000, #A52A2A);
+            color: white !important;
+            border: 3px solid #000000;
             padding: 15px 30px;
             border-radius: 12px;
             font-size: 16px;
             font-weight: 600;
+            font-family: 'Courier New', Courier, monospace !important;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 4px 15px rgba(139, 0, 0, 0.3);
             min-width: 140px;
         }
 
         button:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 8px 25px rgba(139, 0, 0, 0.4);
+            background: linear-gradient(135deg, #A52A2A, #8B0000);
         }
 
         button:active {
@@ -112,70 +161,30 @@
         }
 
         button:disabled {
-            background: #ccc;
+            background: #666666;
             cursor: not-allowed;
             transform: none;
             box-shadow: none;
         }
 
         .clear-btn {
-            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
-            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+            background: linear-gradient(135deg, #000000, #333333) !important;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
         }
 
         .clear-btn:hover {
-            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.4);
-        }
-
-        .store-sections {
-            margin: 30px 0;
-        }
-
-        .store-section {
-            background: rgba(255, 255, 255, 0.5);
-            padding: 25px;
-            border-radius: 15px;
-            margin-bottom: 20px;
-            border: 1px solid rgba(102, 126, 234, 0.1);
-            transition: all 0.3s ease;
-        }
-
-        .store-section:hover {
-            background: rgba(255, 255, 255, 0.7);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .store-section h2 {
-            margin-bottom: 15px;
-            color: #444;
-            font-size: 1.3em;
-            text-align: center;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+            background: linear-gradient(135deg, #333333, #000000) !important;
         }
 
         .wholefoods-btn {
-            background: linear-gradient(135deg, #10ac84, #00a085);
-            box-shadow: 0 4px 15px rgba(16, 172, 132, 0.3);
+            background: linear-gradient(135deg, #8B0000, #A52A2A) !important;
+            box-shadow: 0 4px 15px rgba(139, 0, 0, 0.3);
         }
 
         .wholefoods-btn:hover {
-            box-shadow: 0 8px 25px rgba(16, 172, 132, 0.4);
-        }
-            background: rgba(102, 126, 234, 0.1);
-            padding: 20px;
-            border-radius: 12px;
-            margin-bottom: 25px;
-            border-left: 4px solid #667eea;
-        }
-
-        .instructions p {
-            color: #555;
-            line-height: 1.6;
-            margin-bottom: 10px;
-        }
-
-        .instructions p:last-child {
-            margin-bottom: 0;
+            box-shadow: 0 8px 25px rgba(139, 0, 0, 0.4);
+            background: linear-gradient(135deg, #A52A2A, #8B0000) !important;
         }
 
         .status {
@@ -184,6 +193,7 @@
             border-radius: 8px;
             text-align: center;
             font-weight: 600;
+            font-family: 'Courier New', Courier, monospace !important;
             opacity: 0;
             transform: translateY(10px);
             transition: all 0.3s ease;
@@ -195,15 +205,67 @@
         }
 
         .status.success {
-            background: rgba(46, 204, 113, 0.1);
-            color: #27ae60;
-            border: 1px solid rgba(46, 204, 113, 0.3);
+            background: rgba(0, 0, 0, 0.1);
+            color: #000000 !important;
+            border: 3px solid #000000;
         }
 
         .status.error {
-            background: rgba(231, 76, 60, 0.1);
-            color: #e74c3c;
-            border: 1px solid rgba(231, 76, 60, 0.3);
+            background: rgba(139, 0, 0, 0.1);
+            color: #8B0000 !important;
+            border: 3px solid #8B0000;
+        }
+
+        .drop-zone {
+            border: 3px dashed #8B0000;
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 20px;
+            background: rgba(139, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            font-family: 'Courier New', Courier, monospace !important;
+        }
+
+        .drop-zone.dragover {
+            background: rgba(139, 0, 0, 0.1);
+            border-color: #000000;
+        }
+
+        .drop-zone p {
+            color: #000000 !important;
+            margin: 10px 0;
+            font-family: 'Courier New', Courier, monospace !important;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .upload-btn {
+            background: linear-gradient(135deg, #8B0000, #A52A2A) !important;
+            color: white !important;
+            border: 3px solid #000000;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: 'Courier New', Courier, monospace !important;
+            cursor: pointer;
+            margin: 10px;
+        }
+
+        .upload-btn:hover {
+            background: linear-gradient(135deg, #A52A2A, #8B0000) !important;
+        }
+
+        .processing {
+            background: rgba(0, 0, 0, 0.1);
+            color: #000000 !important;
+            border: 3px solid #000000;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-family: 'Courier New', Courier, monospace !important;
         }
 
         @media (max-width: 600px) {
@@ -232,16 +294,23 @@
         
         <div class="instructions">
             <p><strong>How to use:</strong> Enter your grocery items one per line in the text area below, then choose which store to search.</p>
-            <p>Example:<br>
-            organic bananas<br>
-            greek yogurt<br>
-            olive oil</p>
+            <p>You can also drag and drop an image of your handwritten grocery list for automatic OCR text extraction!</p>
+            <p><strong>Shopping process:</strong> When you click a search button, a new tab will open up for every item on your list. You just need to add an item to your shopping cart on each tab, then close it. When you get to the last tab, you should have a full shopping cart, and you can check out.</p>
         </div>
+
+        <div class="drop-zone" id="dropZone">
+            <p><strong>📷 Drag & Drop Image OCR</strong></p>
+            <p>Drag an image of your grocery list here, or click to upload</p>
+            <button class="upload-btn" onclick="document.getElementById('fileInput').click()">Choose Image</button>
+            <input type="file" id="fileInput" class="file-input" accept="image/*" onchange="handleFileSelect(this.files[0])">
+        </div>
+
+        <div id="processingStatus"></div>
 
         <div class="input-section">
             <label for="groceryList">Enter grocery items (one per line):</label>
-            <textarea 
-                id="groceryList" 
+            <textarea
+                id="groceryList"
                 placeholder="organic bananas&#10;greek yogurt&#10;olive oil&#10;whole grain bread&#10;fresh salmon"></textarea>
         </div>
 
@@ -269,6 +338,78 @@
     </div>
 
     <script>
+        // OCR and file handling functions
+        async function processImageOCR(file) {
+            const processingDiv = document.getElementById('processingStatus');
+            processingDiv.innerHTML = '<div class="processing">🔍 Processing image with OCR... This may take a moment.</div>';
+            
+            try {
+                const result = await Tesseract.recognize(file, 'eng', {
+                    logger: m => {
+                        if (m.status === 'recognizing text') {
+                            const progress = Math.round(m.progress * 100);
+                            processingDiv.innerHTML = `<div class="processing">🔍 Processing OCR... ${progress}%</div>`;
+                        }
+                    }
+                });
+                
+                const extractedText = result.data.text;
+                const textarea = document.getElementById('groceryList');
+                
+                // Clean up the OCR text - split by lines and filter out empty/very short lines
+                const cleanedLines = extractedText
+                    .split('\n')
+                    .map(line => line.trim())
+                    .filter(line => line.length > 2) // Filter out very short lines that might be OCR artifacts
+                    .join('\n');
+                
+                textarea.value = cleanedLines;
+                
+                processingDiv.innerHTML = '<div class="processing">✅ OCR complete! Text extracted and added to the list.</div>';
+                setTimeout(() => {
+                    processingDiv.innerHTML = '';
+                }, 3000);
+                
+            } catch (error) {
+                console.error('OCR Error:', error);
+                processingDiv.innerHTML = '<div class="processing" style="color: #8B0000;">❌ Error processing image. Please try again or enter text manually.</div>';
+                setTimeout(() => {
+                    processingDiv.innerHTML = '';
+                }, 5000);
+            }
+        }
+
+        function handleFileSelect(file) {
+            if (file && file.type.startsWith('image/')) {
+                processImageOCR(file);
+            } else {
+                showStatus('Please select a valid image file.', 'error');
+            }
+        }
+
+        // Drag and drop functionality
+        const dropZone = document.getElementById('dropZone');
+        
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('dragover');
+        });
+        
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('dragover');
+        });
+        
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFileSelect(files[0]);
+            }
+        });
+
+        // Existing search functions
         function searchCostco() {
             searchStore('costco');
         }
